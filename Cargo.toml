@@ -1,7 +1,12 @@
 [package]
 name = "bfs"
+description = "A tool to find files on your disk with breadth first search"
 version = "0.1.0"
 edition = "2021"
+license = "BSD-3-Clause"
+repository = "https://github.com/rain-1/bfs"
+homepage = "https://github.com/rain-1/bfs"
+readme = "readme.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
