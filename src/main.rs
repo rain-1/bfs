@@ -28,6 +28,16 @@ fn cmdline_arg(n:usize, default:&str) -> String {
     return env::args().nth(n).unwrap_or_else(|| String::from(default))
 }
 
+//
+// ./bfs [regex] [path]
+//
+// default regex: .*
+// default path: .
+//
+// Perform a breadth first search starting at the
+// given path. Print filenames matching the regex.
+//
+
 fn main() {
     let re = Regex::new(&cmdline_arg(1, ".*")).unwrap();
     let path = cmdline_arg(2, ".");
