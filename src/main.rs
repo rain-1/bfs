@@ -24,13 +24,13 @@ fn process_queue(mut queue: VecDeque<String>, re: Regex) -> () {
     }
 }
 
-fn cmdline_arg(n:usize, default:String) -> String {
-    return env::args().nth(n).unwrap_or_else(|| default)
+fn cmdline_arg(n:usize, default:&str) -> String {
+    return env::args().nth(n).unwrap_or_else(|| String::from(default))
 }
 
 fn main() {
-    let re = Regex::new(&cmdline_arg(1, String::from(".*"))).unwrap();
-    let path = cmdline_arg(2, String::from("."));
+    let re = Regex::new(&cmdline_arg(1, ".*")).unwrap();
+    let path = cmdline_arg(2, ".");
     let queue: VecDeque<_> = VecDeque::from([path]);
     process_queue(queue, re);
 }
