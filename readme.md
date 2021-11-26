@@ -1,11 +1,22 @@
 # Usage
 
-`./bfs [regex] [path]`
+```
+Breadth First Search the filesystem.
 
-* default regex: .*
-* default path: .
+USAGE:
+    bfs [FLAGS] [ARGS]
 
-Perform a breadth first search starting at the
-given path. Print filenames matching the regex.
+FLAGS:
+    -h, --help       Prints help information
+    -0, --print0     Use NUL delimiters instead of newlines.
+    -V, --version    Prints version information
 
-Returns an exit code of 0 if it finds a match. 1 if it does not.
+ARGS:
+    <regex>    The regex to match filenames against [default: .*]
+    <path>     A path to start search from [default: .]
+```
+
+# Exit codes
+
+* 0 if it found at least one result
+* 1 if it found no results
