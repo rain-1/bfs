@@ -13,3 +13,4 @@ readme = "readme.md"
 [dependencies]
 regex = "1.5.4"
 clap = "2.33.3"
+os_str_bytes = "5.0"

@@ -2,28 +2,37 @@ use clap::{App, Arg};
 use regex::Regex;
 use std::collections::VecDeque;
 use std::fs;
+use std::io;
+use std::io::Write;
+use std::path::PathBuf;
+use os_str_bytes::OsStrBytes;
 
-fn process_queue(mut queue: VecDeque<String>, re: Regex, print0: bool) -> Result<(), ()> {
+fn process_queue(mut queue: VecDeque<PathBuf>, re: Regex, print0: bool) -> Result<(), ()> {
     let mut found_anything = false;
+
+    let stdout = io::stdout();
+    let mut stdout_handle = stdout.lock();
 
     while let Some(path) = queue.pop_front() {
         if let Ok(entries) = fs::read_dir(path) {
             for entry in entries {
                 if let Ok(entry) = entry {
-                    if let Ok(metadata) = entry.metadata() {
-                        let path = entry.path();
-                        let filename_str = path.file_name().unwrap().to_str().unwrap();
-                        let path_str = entry.path().into_os_string().into_string().unwrap();
-                        if metadata.is_dir() {
-                            queue.push_back(path_str);
-                        } else if re.is_match(&filename_str) {
-                            if !print0 {
-                                print!("{}\0", path_str);
+                    match entry.metadata() {
+                        Err(e) => eprintln!("{}", e),
+                        Ok(metadata) => {
+                            let path = entry.path();
+                            let filename_str = path.file_name().unwrap().to_string_lossy();
+                            if metadata.is_dir() {
+                                queue.push_back(path);
+                            } else if re.is_match(&filename_str) {
+                                if print0 {
+                                    stdout_handle.write_all(&path.into_os_string().to_raw_bytes());
+                                    stdout_handle.write_all(&[0]);
+                                } else {
+                                    println!("{}", path.to_string_lossy());
+                                }
+                                found_anything = true
                             }
-                            else {
-                                println!("{}", path_str);
-                            }
-                            found_anything = true
                         }
                     }
                 }
@@ -64,12 +73,11 @@ fn run_app() -> Result<(), ()> {
         )
         .get_matches();
 
-
     let re = Regex::new(matches.value_of("regex").unwrap()).unwrap();
     let path = String::from(matches.value_of("path").unwrap());
     let print0 = matches.is_present("print0");
 
-    let queue: VecDeque<_> = VecDeque::from([path]);
+    let queue: VecDeque<_> = VecDeque::from([PathBuf::from(path)]);
     return process_queue(queue, re, print0);
 }
 
